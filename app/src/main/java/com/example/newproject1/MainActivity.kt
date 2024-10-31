@@ -2,78 +2,65 @@ package com.example.newproject1
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
-import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
 class MainActivity : AppCompatActivity() {
     private var currentNumber = 1
+    private var currentDaduIndex = 0 // Indeks untuk tombol Next
+
+    // Daftar gambar dadu
+    private val daftarGambar = listOf(
+        R.drawable.dadu1,
+        R.drawable.dadu2,
+        R.drawable.dadu3,
+        R.drawable.dadu4,
+        R.drawable.dadu5,
+        R.drawable.dadu6
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        val textLabel = findViewById<TextView>(R.id.labelNama)
-        textLabel.text = "Permainan Dadu"
-        textLabel.setTextColor(getColor(R.color.purple))
-
-        val textLabel1 = findViewById<TextView>(R.id.labelHobby)
-        textLabel1.text = "Mobile"
-        textLabel1.setTextColor(getColor(R.color.white))
-
+        // Referensi elemen
         val tombolGanti = findViewById<Button>(R.id.tombolGanti)
-        val tombolNext = findViewById<Button>(R.id.tombolNext) // untuk tombol Next
+        val tombolNext = findViewById<Button>(R.id.tombolNext)
         val gambar = findViewById<ImageView>(R.id.gambar)
-
-        // Mengganti gambar acak
-        tombolGanti.setOnClickListener {
-            currentNumber = randomdadu(gambar) // Menampilkan random dadu
-        }
-
-        tombolNext.setOnClickListener {
-            nextGambar(gambar) // Memanggil fungsi untuk next gambar
-        }
-
-        // Tombol untuk berpindah ke halaman2 - New
         val tombolGoto2 = findViewById<Button>(R.id.gotoHalaman2)
-        tombolGoto2.setOnClickListener {
-            val intent = Intent(this, halaman2::class.java)
-            startActivity(intent)
+
+        // Mengganti gambar dadu secara acak
+        tombolGanti.setOnClickListener {
+            val hitung = (0..5).random()
+            gambar.setImageResource(daftarGambar[hitung]) // Menggunakan setImageResource
         }
 
-        // Window insets handling
+        // Tombol next untuk mengganti dadu secara urut
+        tombolNext.setOnClickListener {
+            currentDaduIndex = (currentDaduIndex + 1) % daftarGambar.size
+            gambar.setImageResource(daftarGambar[currentDaduIndex])
+        }
+
+        // Tombol untuk kembali ke halaman kalkulator (halaman2)
+        tombolGoto2.setOnClickListener(View.OnClickListener {
+            val intent = Intent(this, halaman2::class.java)
+            intent.putExtra("pesanPindahHalaman", "dari halamaman dadu")
+            startActivity(intent)
+        })
+        Toast.makeText(this,intent.getStringExtra("pesanPindahHalaman")
+            .toString(),
+            Toast.LENGTH_LONG).show()
+
+        // Handling window insets untuk layout full-screen
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-    }
-
-    // Angka acak dari 1 sampai 6
-    fun randomdadu(gambar: ImageView): Int {
-        currentNumber = (1..6).random()
-        gantigambar(currentNumber, gambar) // Memanggil gantigambar dengan angka acak
-        return currentNumber // Mengembalikan angka yang dihasilkan
-    }
-
-    // Mengupdate gantigambar untuk menerima angka acak
-    fun gantigambar(angka: Int, gambar: ImageView) {
-        val resourceId = resources.getIdentifier("dadu$angka", "drawable", packageName)
-        gambar.setImageDrawable(getDrawable(resourceId))
-    }
-
-    // Fungsi untuk mengganti gambar ke angka berikutnya
-    fun nextGambar(gambar: ImageView) {
-        currentNumber = if (currentNumber < 6) {
-            currentNumber + 1 // Jika angka saat ini kurang dari 6, tambahkan 1
-        } else {
-            1 // Jika angka saat ini adalah 6, kembali ke 1
-        }
-        gantigambar(currentNumber, gambar) // Memanggil gantigambar dengan angka baru
     }
 }
