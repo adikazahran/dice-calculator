@@ -6,7 +6,6 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.RadioButton
-import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -20,7 +19,13 @@ class halaman2 : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_halaman2)
 
-        // Access all the UI elements
+        // Menerima pesan Intent dari halaman sebelumnya
+        val pesan = intent.getStringExtra("pesanPindahHalaman")
+        if (!pesan.isNullOrEmpty()) {
+            Toast.makeText(this, pesan, Toast.LENGTH_LONG).show()
+        }
+
+        // Mengakses semua elemen tampilan
         val angkaPertama = findViewById<EditText>(R.id.angkaPertama)
         val angkaKedua = findViewById<EditText>(R.id.angkaKedua)
         val hasil = findViewById<TextView>(R.id.hasil)
@@ -31,14 +36,14 @@ class halaman2 : AppCompatActivity() {
         val kurang = findViewById<RadioButton>(R.id.kurang)
         val bagi = findViewById<RadioButton>(R.id.bagi)
 
-        // Handle window insets for edge-to-edge experience
+        // Mengatur padding agar tampilan memenuhi layar
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // Functionality for the "hitung" button
+        // Untuk mengatur fungsi aritmatika (kali, tambah, kurang, bagi)
         tombolHitung.setOnClickListener {
             if (kali.isChecked) {
                 val result =
@@ -60,19 +65,22 @@ class halaman2 : AppCompatActivity() {
 
             if (bagi.isChecked) {
                 val result =
-                    angkaPertama.text.toString().toInt() / angkaKedua.text.toString().toInt()
-                hasil.text = result.toString()
+                    angkaPertama.text.toString().toDouble() / angkaKedua.text.toString().toDouble()
+                // Untuk mengatur logika supaya pembagian yang hasilnya bulat dan desimal itu dibedakan
+                if (result % 1.0 == 0.0) {
+                    hasil.text = result.toInt().toString()
+                } else {
+                    hasil.text = result.toString()
+                }
             }
+
         }
 
         // Tombol untuk kembali ke halaman dadu (MainActivity)
-        pindahhalaman.setOnClickListener(View.OnClickListener {
+        pindahhalaman.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("pesanPindahHalaman", "dari halamaman kalkulator")
+            intent.putExtra("pesanPindahHalaman", "dari halaman kalkulator")
             startActivity(intent)
-        })
-        Toast.makeText(this,intent.getStringExtra("pesanPindahHalaman")
-            .toString(),
-            Toast.LENGTH_LONG).show()
+        }
     }
 }

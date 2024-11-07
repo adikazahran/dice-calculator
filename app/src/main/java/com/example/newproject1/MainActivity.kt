@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
     private var currentNumber = 1
     private var currentDaduIndex = 0 // Indeks untuk tombol Next
 
-    // Daftar gambar dadu
+    // Gambar dadu
     private val daftarGambar = listOf(
         R.drawable.dadu1,
         R.drawable.dadu2,
@@ -28,7 +28,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Referensi elemen
+        // Menerima pesan Intent dari halaman sebelumnya
+        val pesan = intent.getStringExtra("pesanPindahHalaman")
+        if (!pesan.isNullOrEmpty()) {
+            Toast.makeText(this, pesan, Toast.LENGTH_LONG).show()
+        }
+
+        // Mengakses semua elemen tampila
         val tombolGanti = findViewById<Button>(R.id.tombolGanti)
         val tombolNext = findViewById<Button>(R.id.tombolNext)
         val gambar = findViewById<ImageView>(R.id.gambar)
@@ -47,16 +53,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Tombol untuk kembali ke halaman kalkulator (halaman2)
-        tombolGoto2.setOnClickListener(View.OnClickListener {
+        tombolGoto2.setOnClickListener {
             val intent = Intent(this, halaman2::class.java)
-            intent.putExtra("pesanPindahHalaman", "dari halamaman dadu")
+            intent.putExtra("pesanPindahHalaman", "dari halaman dadu")
             startActivity(intent)
-        })
-        Toast.makeText(this,intent.getStringExtra("pesanPindahHalaman")
-            .toString(),
-            Toast.LENGTH_LONG).show()
+        }
 
-        // Handling window insets untuk layout full-screen
+        // Mengatur ruang layar agar tampilan penuh
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
